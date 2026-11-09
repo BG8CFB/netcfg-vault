@@ -75,3 +75,10 @@ netcfg-vault vault extract vault.nvault --out restored
 - 0.5.0: Ed25519 非对称 license（NCVE- 前缀），公钥内嵌验证、私钥离线签发；兼容 v1 HMAC key；GitHub Discussions 开张。
 - 0.4.0: AES-256-GCM 加密 vault + 离线 Pro license。
 - 0.3.x: 定时备份 + webhook 告警 + 配置 diff。
+
+
+## 速查资料
+
+- [H3C 交换机命令速查](https://gist.github.com/BG8CFB/90b4f692a5f751028e9ec85e53371242)
+- [华为交换机命令速查](https://gist.github.com/BG8CFB/3a229cdd6c3befa094f54ba45e6c5a3e)
+- [网络故障排查决策树](https://gist.github.com/BG8CFB/0c943554bb32071f7e7949ca4f6587a4)
