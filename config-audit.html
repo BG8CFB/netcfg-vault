@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>交换机配置安全检测 在线审计 — telnet/SNMP弱口令/明文密码一键扫描</title>
+<meta name="description" content="在线检测交换机配置安全隐患：telnet 开启、SNMP 默认团体字、明文密码、Web 管理、SSHv1、VTY 无 ACL 六项规则。支持 H3C/华为/思科。免费，数据不出浏览器。">
+<meta name="keywords" content="交换机安全检测,配置合规审计,h3c 安全配置检查,华为交换机弱口令,telnet 关闭,snmp public 弱口令,配置基线核查">
+<link rel="canonical" href="https://bg8cfb.github.io/netcfg-vault/config-audit.html">
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.65;padding:24px}
+.wrap{max-width:1000px;margin:0 auto}
+h1{font-size:1.7rem;color:#58a6ff;margin-bottom:8px}
+.sub{color:#8b949e;margin-bottom:20px;font-size:.95rem}
+label{display:block;font-size:.85rem;color:#8b949e;margin-bottom:6px}
+textarea{width:100%;height:300px;background:#161b22;border:1px solid #30363d;border-radius:8px;color:#c9d1d9;padding:12px;font-family:ui-monospace,Consolas,monospace;font-size:.82rem;resize:vertical}
+textarea:focus{outline:none;border-color:#58a6ff}
+.bar{display:flex;gap:10px;margin:16px 0;flex-wrap:wrap;align-items:center}
+button{background:#238636;color:#fff;border:none;border-radius:6px;padding:10px 22px;font-size:.95rem;cursor:pointer;font-weight:600}
+button:hover{background:#2ea043}
+button.ghost{background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:8px 14px;font-size:.85rem}
+#out{display:none}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+@media(max-width:640px){.summary{grid-template-columns:1fr}}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;text-align:center}
+.card .n{font-size:2rem;font-weight:700}
+.hi .n{color:#f85149}.md .n{color:#d29922}.ok .n{color:#3fb950}
+.card .t{font-size:.8rem;color:#8b949e}
+.find{background:#161b22;border:1px solid #30363d;border-left:4px solid #30363d;border-radius:8px;padding:12px 16px;margin-bottom:10px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.find.hi{border-left-color:#f85149}
+.find.md{border-left-color:#d29922}
+.find .desc{font-size:.95rem}
+.find .fix{font-size:.82rem;color:#8b949e;margin-top:4px;flex:1 1 100%}
+.badge{font-size:.72rem;padding:2px 10px;border-radius:10px;font-weight:600;white-space:nowrap}
+.hi .badge{background:rgba(248,81,73,.15);color:#f85149}
+.md .badge{background:rgba(210,153,34,.15);color:#d29922}
+.allok{background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.3);border-radius:8px;padding:18px;text-align:center;color:#3fb950;font-size:1.05rem}
+.foot{margin-top:28px;padding-top:16px;border-top:1px solid #21262d;color:#8b949e;font-size:.85rem}
+.foot a{color:#58a6ff;text-decoration:none}
+.cta{background:linear-gradient(135deg,#1f6feb33,#23863633);border:1px solid #30363d;border-radius:10px;padding:16px 20px;margin-top:22px}
+.cta b{color:#58a6ff}
+code{color:#3fb950}
+</style>
+</head>
+<body><div class="wrap">
+<h1>交换机配置安全检测</h1>
+<p class="sub">粘贴一份配置 → 6 项安全规则扫描（telnet / SNMP 默认团体字 / 明文密码 / Web 管理 / SSHv1 / VTY 无 ACL）→ 给出修复命令。H3C / 华为 / 思科通用，数据不出浏览器。</p>
+<label for="cfg">粘贴设备配置（display current-configuration / show running-config）</label>
+<textarea id="cfg" placeholder="#&#10;hostname core-sw&#10;telnet server enable&#10;snmp-agent community read public&#10;local-user admin&#10; password simple admin123&#10;user-interface vty 0 4&#10;..."></textarea>
+<div class="bar">
+<button id="go">开始检测</button>
+<button class="ghost" id="demo">填入示例</button>
+<button class="ghost" id="clear">清空</button>
+</div>
+<div id="out"></div>
+<div class="cta">
+<b>批量审计已内置在 netcfg-vault CLI</b> —— 备份全网后一条命令扫所有设备，输出 CSV/HTML 巡检报告：<br>
+<code>pip install netcfg-vault</code> · <a href="https://github.com/BG8CFB/netcfg-vault" style="color:#58a6ff">GitHub</a> · <a href="https://bg8cfb.github.io/netcfg-vault/tutorial.html" style="color:#58a6ff">中文教程</a>
+</div>
+<div class="foot">
+<p>相关工具：<a href="https://bg8cfb.github.io/netcfg-vault/config-diff.html">在线配置对比工具</a> · <a href="https://bg8cfb.github.io/netops-cheatsheets/command-map.html">三厂商命令对照表</a> · <a href="https://bg8cfb.github.io/netops-cheatsheets/ssh-setup.html">SSH 安全配置</a> · <a href="https://bg8cfb.github.io/netops-cheatsheets/snmp-setup.html">SNMP v3 配置</a></p>
+<p>© 2026 BG8CFB · 交流: 2945362558@qq.com</p>
+</div>
+</div>
+<script>
+function rules(cfg){
+ var f=[];
+ function m(re,flags){return new RegExp(re,(flags||'')+'gm').test(cfg)}
+ if(m('^\\s*telnet server enable'))f.push(['telnet-enabled','telnet 管理已开启','high','undo telnet server enable（H3C/华为）；改用 SSH：<a href="https://bg8cfb.github.io/netops-cheatsheets/ssh-setup.html">三厂商 SSH 配置</a>']);
+ if(m('snmp-agent community (?:read|write) (?:public|private)','i')||m('snmp-server community (?:public|private)','i'))f.push(['snmp-default','SNMP 使用默认团体名 public/private','high','改用复杂团体字或 SNMPv3：<a href="https://bg8cfb.github.io/netops-cheatsheets/snmp-setup.html">SNMP v3 配置</a>']);
+ if(m('password (?:simple|cipher) (?:\\w{1,7})\\s*$','i'))f.push(['weak-password','本地用户密码为 simple/明文且过短','high','local-user admin → password cipher <强密码>；或启用 AAA + SSH 公钥']);
+ if(m('^\\s*(?:ip http enable|undo ip http disable|ip http server)$'))f.push(['http-enabled','设备 Web 管理已开启','medium','undo ip http enable（H3C/华为）/ no ip http server（思科）']);
+ if(m('ssh server compatible-ssh1x enable','i')||m('ip ssh version 1','i'))f.push(['ssh-v1','SSH v1 兼容模式','medium','undo ssh server compatible-ssh1x enable / ip ssh version 2']);
+ if(new RegExp('user-interface vty','i').test(cfg)&&!new RegExp('vty[\\s\\S]*?acl \\d+ inbound','i').test(cfg))f.push(['vty-no-acl','VTY 线路未绑定 ACL','medium','acl 2001 规则仅放行管理段 → user-interface vty 0 4 → acl 2001 inbound']);
+ return f;
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+var sevName={high:'高危',medium:'中危'};
+document.getElementById('go').onclick=function(){
+ var cfg=document.getElementById('cfg').value;
+ var f=rules(cfg);
+ var hi=f.filter(function(x){return x[2]==='high'}).length;
+ var md=f.filter(function(x){return x[2]==='medium'}).length;
+ var out=document.getElementById('out');
+ out.style.display='block';
+ var h='<div class="summary">'
+ +'<div class="card hi"><div class="n">'+hi+'</div><div class="t">高危</div></div>'
+ +'<div class="card md"><div class="n">'+md+'</div><div class="t">中危</div></div>'
+ +'<div class="card ok"><div class="n">'+(6-hi-md)+'</div><div class="t">已通过</div></div></div>';
+ if(f.length===0){
+  h+='<div class="allok">✅ 未检出已知隐患（6 项规则全部通过）</div>';
+ }else{
+  f.sort(function(a,b){return a[2]===b[2]?0:(a[2]==='high'?-1:1)});
+  for(var i=0;i<f.length;i++){
+   h+='<div class="find '+f[i][2]+'"><span class="desc">'+esc(f[i][1])+' <span style="color:#6e7681;font-size:.8rem">('+f[i][0]+')</span></span><span class="badge">'+sevName[f[i][2]]+'</span><div class="fix">修复：'+f[i][3]+'</div></div>';
+  }
+ }
+ out.innerHTML=h;
+};
+var DEMO='#\nhostname core-sw\ntelnet server enable\n#\nvlan 10\n#\nsnmp-agent community read public\n#\nlocal-user admin\n password simple abc123\n service-type ssh telnet\n#\nuser-interface vty 0 4\n authentication-mode password\n#\nip http enable\n#\nreturn';
+document.getElementById('demo').onclick=function(){
+ document.getElementById('cfg').value=DEMO;
+ document.getElementById('go').click();
+};
+document.getElementById('clear').onclick=function(){
+ document.getElementById('cfg').value='';
+ document.getElementById('out').style.display='none';
+ document.getElementById('out').innerHTML='';
+};
+</script>
+</body></html>
