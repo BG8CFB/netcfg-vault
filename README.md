@@ -84,3 +84,13 @@ netcfg-vault audit backups/2026-11-10/ --csv report.csv
 ```
 
 离线扫描备份目录, 6 条规则 (telnet/SNMP默认团体名/Web管理/SSHv1/明文密码/VTY无ACL), 输出按严重度排序的 CSV 报告。不连设备, 不需要任何凭据。
+
+
+## v0.7.0 — HTML 巡检报告
+
+```bash
+netcfg-vault backup -f devices.yml -o backups/$(date +%F)/
+netcfg-vault report backups/2026-11-10/ --prev backups/2026-11-09/ --out report.html
+```
+
+一份可打印的 HTML 巡检报告: 设备数/高危项/中危项/变更设备数四张卡片 + 合规审计明细表 + 逐设备配置变更量表。给领导看的巡检, 一条命令。
