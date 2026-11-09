@@ -1,6 +1,6 @@
 # netcfg-vault
 
-> 产品主页: <https://bg8cfb.github.io/netcfg-vault/>
+> 产品主页: <https://bg8cfb.github.io/netcfg-vault/> · PyPI: <https://pypi.org/project/netcfg-vault/>
 
 **批量备份和对比网络设备配置的命令行工具** — 面向网络工程师 / 运维。
 
