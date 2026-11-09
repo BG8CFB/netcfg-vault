@@ -18,6 +18,16 @@ pip install netcfg-vault
 netcfg-vault backup devices.yml
 ```
 
+配置变更对比（自动忽略时间戳噪声，只看真实变更）：
+```bash
+netcfg-vault diff backups/old.cfg backups/new.cfg
+# -sysname CoreSW01
+# +sysname CoreSW02
+# [summary] +1 / -1
+```
+
+📖 完整教程: [网络设备配置还在手动导出？](https://gist.github.com/BG8CFB/6aab6eb7b32ef1e06ab9fe632da6346a)
+
 ## Pro 版（¥99 一次性）
 - 无设备数限制
 - 定时任务 + 失败告警（邮件/企业微信/钉钉）
