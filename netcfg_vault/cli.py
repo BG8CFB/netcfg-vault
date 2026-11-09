@@ -151,3 +151,10 @@ def cmd_audit(args) -> int:
         write_csv(findings, args.csv_out)
         print(f"已写入 {args.csv_out}")
     return 1
+
+
+def cmd_report(args) -> int:
+    from .report import generate_report
+    out = generate_report(args.dir, args.out, prev_dir=args.prev_dir)
+    print(f"报告已生成: {out}")
+    return 0
