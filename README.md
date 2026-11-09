@@ -1,5 +1,7 @@
 # netcfg-vault
 
+[![Releases](https://img.shields.io/badge/release-v0.9.1-blue)](https://github.com/BG8CFB/netcfg-vault/releases) [![PyPI](https://img.shields.io/badge/pypi-netcfg--vault-orange)](https://pypi.org/project/netcfg-vault/)
+
 > Search keywords: h3c配置备份工具 · 华为交换机配置备份 · 思科 running-config 批量导出 · 网络设备配置自动备份 · network device config backup CLI · H3C Huawei Cisco Ruijie config management
 
 > 产品主页: <https://bg8cfb.github.io/netcfg-vault/> · PyPI: <https://pypi.org/project/netcfg-vault/> · 中文教程: <https://bg8cfb.github.io/netcfg-vault/tutorial.html>
