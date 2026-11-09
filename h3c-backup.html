@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>华为交换机配置备份怎么做？3 种方法对比 + 自动备份脚本 — VRP 运维指南</title>
+<title>H3C 交换机配置备份怎么做？3 种方法对比 + 自动备份脚本 — Comware 运维指南</title>
 <meta name="description" content="H3C 交换机配置备份完整指南: display current-configuration 手工备份、TFTP/FTP 备份、Python 自动批量备份三种方法对比, 附定时备份与加密归档方案。">
-<meta name="keywords" content="华为交换机配置备份,huawei switch config backup,VRP配置备份,display saved-configuration,交换机配置导出,网络设备自动备份">
+<meta name="keywords" content="h3c配置备份,h3c switch config backup,Comware配置备份,display current-configuration,华三交换机配置导出,网络设备自动备份">
 <link rel="canonical" href="https://bg8cfb.github.io/netcfg-vault/h3c-backup.html">
 <style>
 body{background:#0d1117;color:#c9d1d9;font-family:system-ui,"Microsoft YaHei",sans-serif;max-width:860px;margin:0 auto;padding:32px 20px;line-height:1.75}
@@ -31,7 +31,7 @@ a{color:#58a6ff}
 <p class="warn">缺点: 设备一多就不可维护, 无法追溯每天改了什么。</p>
 
 <h2>方法二: TFTP/FTP 备份</h2>
-<pre><code>&lt;H3C-SW&gt; tftp 192.168.1.100 put vrpcfg.zip h3c-sw1-config.zip</code></pre>
+<pre><code>&lt;H3C-SW&gt; tftp 192.168.1.100 put config.cfg h3c-sw1-config.zip</code></pre>
 <p>或在用户视图直接 <code>save</code> 后用 FTP 服务器拉取。适合单台应急, 但需要内网有 TFTP/FTP 服务, 且明文传输。</p>
 
 <h2>方法三: Python 脚本自动批量备份 (推荐)</h2>
