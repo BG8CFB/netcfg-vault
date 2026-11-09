@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
@@ -48,6 +48,7 @@ netcfg-vault backup devices.yml --out backups/</code></pre>
 <pre><code>netcfg-vault diff backups/2026-11-09/ backups/2026-11-10/</code></pre>
 <p>自动过滤时间戳/uptime 噪声, 只留真实配置变更。</p>
 
+<p class=tip>💡 不想装 CLI？两份配置临时对比可用<a href="https://bg8cfb.github.io/netcfg-vault/config-diff.html">在线配置对比工具</a>（本页同款噪声过滤，数据不出浏览器）。</p>
 <h2>6. 加密保险库 (防泄漏)</h2>
 <pre><code>netcfg-vault vault save backups/ --out configs.nvault --ask-pass
 netcfg-vault vault list configs.nvault --ask-pass</code></pre>
@@ -90,3 +91,4 @@ netcfg-vault baseline remove golden</pre>
 </ul>
 <p>© 2026 BG8CFB · 交流: 2945362558@qq.com</p>
 </body></html>
+
