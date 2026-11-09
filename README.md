@@ -1,6 +1,8 @@
-# netcfg-vault
+﻿# netcfg-vault
 
 > Search keywords: h3c配置备份工具 · 华为交换机配置备份 · 思科 running-config 批量导出 · 网络设备配置自动备份 · network device config backup CLI · H3C Huawei Cisco Ruijie config management
+
+> [English README](./README_EN.md) · English docs
 
 > 产品主页: <https://bg8cfb.github.io/netcfg-vault/> · PyPI: <https://pypi.org/project/netcfg-vault/> · 中文教程: <https://bg8cfb.github.io/netcfg-vault/tutorial.html>
 
@@ -109,3 +111,4 @@ netcfg-vault baseline remove golden
 ```
 
 巡检场景：把上周备份设为基线，本周 diff 一眼看出谁改了配置（NEW/MISSING/CHANGED + 行级 diff）。
+
