@@ -51,3 +51,19 @@ netcfg-vault diff backups/old.cfg backups/new.cfg
 
 ## License
 MIT（代码），品牌与文档保留权利。
+
+## v0.4.0 新增
+
+### 加密保管库（AES-256-GCM）
+备份文件包含 ACL、SNMP community、账号等敏感信息，明文落盘有风险。保管库把整个备份目录加密成单个 .nvault 文件：
+
+```bash
+netcfg-vault vault save backups/ --out vault.nvault   # 加密（口令 PBKDF2 600k 迭代）
+netcfg-vault vault list vault.nvault                  # 只看清单，不落盘
+netcfg-vault vault extract vault.nvault --out restored
+```
+
+### Pro 授权体系（离线验证）
+- Pro key 解锁无限设备 + watch 全量轮询，`netcfg-vault license` 查看状态
+- license 通过 `NETCFG_LICENSE` 环境变量或 `~/.netcfg-vault/license` 文件配置
+- 验证完全离线（HMAC-SHA256 签名，无遥测无外呼）

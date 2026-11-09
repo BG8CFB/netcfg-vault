@@ -1,21 +1,24 @@
 """netcfg-vault CLI: backup network device configs concurrently."""
 import argparse
+import getpass
 import os
 import sys
 from pathlib import Path
 
 from .backup import backup_device, load_devices
 from .diff import changed_lines, diff_configs
+from .license import effective_device_limit, load_license
 
 FREE_DEVICE_LIMIT = 5
 
 
 def cmd_backup(args):
     devices = load_devices(args.inventory)
-    if not args.pro:
-        devices = devices[:FREE_DEVICE_LIMIT]
-        if len(devices) == FREE_DEVICE_LIMIT:
-            print(f"[free] 仅备份前 {FREE_DEVICE_LIMIT} 台设备（Pro 解锁全部）")
+    limit = effective_device_limit() if not args.pro else None
+    if limit is not None:
+        if len(devices) > limit:
+            print(f"[free] 仅备份前 {limit} 台设备（Pro 解锁全部）")
+        devices = devices[:limit]
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
     failures = []
@@ -49,10 +52,44 @@ def cmd_watch(args):
     """Pro: 定时备份循环。"""
     from .scheduler import Scheduler
 
-    sched = Scheduler(args.inventory, args.out, interval=args.interval, device_limit=None if args.pro else FREE_DEVICE_LIMIT)
+    sched = Scheduler(args.inventory, args.out, interval=args.interval, device_limit=None if args.pro else effective_device_limit())
     if not args.pro:
         print(f"[free] watch 模式仅备份前 {FREE_DEVICE_LIMIT} 台设备（Pro 解锁全部）")
     sched.run_forever()
+
+
+def cmd_vault_save(args):
+    """加密备份目录为 .nvault 档案。"""
+    from .vault import vault_save
+
+    n = vault_save(args.dir, args.out, getpass.getpass("保管库口令: "))
+    print(f"[ok] 已加密 {n} 个文件 -> {args.out}")
+
+
+def cmd_vault_list(args):
+    from .vault import vault_list
+
+    for f in vault_list(args.vault, getpass.getpass("保管库口令: ")):
+        print(f"{f['size']:>10}  {f['name']}")
+
+
+def cmd_vault_extract(args):
+    from .vault import vault_extract
+
+    files = vault_extract(args.vault, getpass.getpass("保管库口令: "), args.out)
+    print(f"[ok] 解出 {len(files)} 个文件 -> {args.out}")
+
+
+def cmd_license(args):
+    """显示当前授权状态。"""
+    info = load_license()
+    if info:
+        import datetime
+
+        exp = datetime.datetime.fromtimestamp(info["expiry"]).strftime("%Y-%m-%d")
+        print(f"[Pro] {info['customer']} · 设备上限 {info['device_limit']} · 有效期至 {exp}")
+    else:
+        print("[free] 免费版（5 台设备）。Pro 授权: 设置 NETCFG_LICENSE 或 ~/.netcfg-vault/license")
 
 
 def main():
@@ -75,6 +112,22 @@ def main():
     d.add_argument("old", help="旧配置路径")
     d.add_argument("new", help="新配置路径")
     d.set_defaults(func=cmd_diff)
+
+    v = sub.add_parser("vault", help="加密保管库（AES-256-GCM）")
+    vsub = v.add_subparsers(dest="vault_cmd", required=True)
+    vs = vsub.add_parser("save", help="加密备份目录")
+    vs.add_argument("dir", help="备份目录")
+    vs.add_argument("--out", default="backups.nvault", help="输出档案路径")
+    vs.set_defaults(func=cmd_vault_save)
+    vl = vsub.add_parser("list", help="列出档案内容")
+    vl.add_argument("vault", help=".nvault 路径")
+    vl.set_defaults(func=cmd_vault_list)
+    ve = vsub.add_parser("extract", help="解密档案")
+    ve.add_argument("vault", help=".nvault 路径")
+    ve.add_argument("--out", default="restored", help="解出目录")
+    ve.set_defaults(func=cmd_vault_extract)
+    lc = sub.add_parser("license", help="显示授权状态")
+    lc.set_defaults(func=cmd_license)
 
     args = ap.parse_args()
     args.func(args)
