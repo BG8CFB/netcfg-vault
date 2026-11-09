@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>华为交换机配置备份怎么做？3 种方法对比 + 自动备份脚本 — VRP 运维指南</title>
+<meta name="description" content="华为交换机配置备份完整指南: display saved-configuration 手工备份、TFTP/FTP 备份、Python 自动批量备份三种方法对比, 附定时备份与加密归档方案。">
+<meta name="keywords" content="华为交换机配置备份,huawei switch config backup,VRP配置备份,display saved-configuration,交换机配置导出,网络设备自动备份">
+<link rel="canonical" href="https://bg8cfb.github.io/netcfg-vault/huawei-backup.html">
+<style>
+body{background:#0d1117;color:#c9d1d9;font-family:system-ui,"Microsoft YaHei",sans-serif;max-width:860px;margin:0 auto;padding:32px 20px;line-height:1.75}
+h1{color:#58a6ff;font-size:1.6em}h2{color:#79c0ed;border-bottom:1px solid #21262d;padding-bottom:6px;margin-top:2em}
+code{background:#161b22;padding:2px 6px;border-radius:4px}
+pre{background:#161b22;padding:14px;border-radius:6px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;margin:1em 0}
+td,th{border:1px solid #30363d;padding:8px 12px;text-align:left}
+th{background:#161b22}
+.warn{color:#f0883e}
+a{color:#58a6ff}
+</style>
+</head>
+<body>
+<h1>华为交换机配置备份: 3 种方法对比 + 自动化方案</h1>
+<p>华为 VRP 交换机的配置备份是日常运维的高频操作。本文覆盖手工导出、TFTP/FTP 传输、脚本自动批量备份三种方式, 并给出定时备份 + 加密归档的完整方案。</p>
+
+<h2>方法一: 手工备份 (display 命令导出)</h2>
+<p>登录交换机后执行:</p>
+<pre><code>&lt;HW-SW&gt; display current-configuration
+&lt;HW-SW&gt; display saved-configuration</code></pre>
+<p><code>current-configuration</code> 是当前运行配置, <code>saved-configuration</code> 是已保存配置。两者不一致说明改过没保存。SecureCRT/Xshell 里直接全选复制到本地文件。</p>
+<p class="warn">缺点: 设备一多就不可维护, 无法追溯每天改了什么。</p>
+
+<h2>方法二: TFTP/FTP 备份</h2>
+<pre><code>&lt;HW-SW&gt; tftp 192.168.1.100 put vrpcfg.zip hw-sw1-config.zip</code></pre>
+<p>或在用户视图直接 <code>save</code> 后用 FTP 服务器拉取。适合单台应急, 但需要内网有 TFTP/FTP 服务, 且明文传输。</p>
+
+<h2>方法三: Python 脚本自动批量备份 (推荐)</h2>
+<pre><code>pip install netcfg-vault
+netcfg-vault init
+export NETCFG_PASSWORD='设备密码'
+netcfg-vault backup devices.yml --out backups/</code></pre>
+<p>一条命令批量备份全网华为/H3C/思科/锐捷设备, 按日期归档, 自动过滤 diff 噪声, 支持 AES-256-GCM 加密保险库和钉钉/企微告警。免费版支持 5 台。</p>
+
+<h2>三种方法对比</h2>
+<table>
+<tr><th>方法</th><th>适用</th><th>定时</th><th>加密</th><th>变更追溯</th></tr>
+<tr><td>手工 display</td><td>单台应急</td><td>否</td><td>否</td><td>否</td></tr>
+<tr><td>TFTP/FTP</td><td>小规模</td><td>难</td><td>否</td><td>否</td></tr>
+<tr><td>netcfg-vault</td><td>全网规模</td><td>systemd/cron</td><td>AES-256-GCM</td><td>diff 命令</td></tr>
+</table>
+
+<h2>定时备份 (Linux)</h2>
+<pre><code>netcfg-vault init   # 生成 systemd service + timer, 每天 02:30 自动备份
+systemctl enable --now netcfg-backup.timer</code></pre>
+
+<h2>常见问题</h2>
+<p><b>备份的文件在哪?</b> 默认 <code>backups/日期/设备名.cfg</code>。</p>
+<p><b>如何看今天改了什么?</b> <code>netcfg-vault diff backups/昨天/ backups/今天/</code></p>
+<p><b>配置文件能加密吗?</b> <code>netcfg-vault vault save backups/ --out configs.nvault --ask-pass</code></p>
+
+<h2>相关工具</h2>
+<ul>
+<li><a href="https://github.com/BG8CFB/netcfg-vault">netcfg-vault — 开源配置备份 CLI (MIT)</a></li>
+<li><a href="https://bg8cfb.github.io/netcfg-vault/tutorial.html">通用教程: 5 分钟上手</a></li>
+<li><a href="https://bg8cfb.github.io/netops-cheatsheets/command-map.html">H3C/华为/思科命令对照表</a></li>
+</ul>
+<p>© 2026 BG8CFB · 交流: 2945362558@qq.com</p>
+</body></html>
