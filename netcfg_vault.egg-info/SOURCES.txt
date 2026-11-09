@@ -3,11 +3,14 @@ README.md
 pyproject.toml
 netcfg_vault/__init__.py
 netcfg_vault/_pro_secret.py
+netcfg_vault/audit.py
 netcfg_vault/backup.py
 netcfg_vault/cli.py
 netcfg_vault/diff.py
+netcfg_vault/init_cmd.py
 netcfg_vault/license.py
 netcfg_vault/notify.py
+netcfg_vault/report.py
 netcfg_vault/scheduler.py
 netcfg_vault/vault.py
 netcfg_vault.egg-info/PKG-INFO
@@ -16,9 +19,11 @@ netcfg_vault.egg-info/dependency_links.txt
 netcfg_vault.egg-info/entry_points.txt
 netcfg_vault.egg-info/requires.txt
 netcfg_vault.egg-info/top_level.txt
+tests/test_audit.py
 tests/test_diff.py
 tests/test_license.py
 tests/test_license_v2.py
 tests/test_notify.py
+tests/test_report.py
 tests/test_scheduler.py
 tests/test_vault.py

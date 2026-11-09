@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: netcfg-vault
-Version: 0.5.0
+Version: 0.8.0
 Summary: 批量备份和对比网络设备配置的命令行工具
 License: MIT
 Requires-Python: >=3.9
@@ -12,6 +12,8 @@ Requires-Dist: PyYAML>=6.0
 Dynamic: license-file
 
 # netcfg-vault
+
+> Search keywords: h3c配置备份工具 · 华为交换机配置备份 · 思科 running-config 批量导出 · 网络设备配置自动备份 · network device config backup CLI · H3C Huawei Cisco Ruijie config management
 
 > 产品主页: <https://bg8cfb.github.io/netcfg-vault/> · PyPI: <https://pypi.org/project/netcfg-vault/>
 

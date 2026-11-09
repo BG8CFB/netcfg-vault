@@ -1,5 +1,6 @@
 """netcfg-vault CLI: backup network device configs concurrently."""
 import argparse
+import sys
 import getpass
 import os
 import sys
@@ -92,7 +93,7 @@ def cmd_license(args):
         print("[free] 免费版（5 台设备）。Pro 授权: 设置 NETCFG_LICENSE 或 ~/.netcfg-vault/license")
 
 
-def main():
+def main() -> int:
     ap = argparse.ArgumentParser(prog="netcfg-vault", description="批量备份网络设备配置")
     sub = ap.add_subparsers(dest="cmd", required=True)
     b = sub.add_parser("backup", help="执行备份")
@@ -129,9 +130,52 @@ def main():
     lc = sub.add_parser("license", help="显示授权状态")
     lc.set_defaults(func=cmd_license)
 
+    au = sub.add_parser("audit", help="离线合规审计（检查备份配置中的风险项）")
+    au.add_argument("dir", help="备份目录")
+    au.add_argument("--csv-out", default=None, help="CSV 输出路径")
+    au.set_defaults(func=cmd_audit)
+
+    rp = sub.add_parser("report", help="生成 HTML 巡检报告")
+    rp.add_argument("dir", help="备份目录")
+    rp.add_argument("--out", default="report.html", help="输出文件")
+    rp.add_argument("--prev", default=None, dest="prev_dir", help="前一日目录（对比变更）")
+    rp.set_defaults(func=cmd_report)
+
+    it = sub.add_parser("init", help="初始化工作目录（清单模板+systemd/cron）")
+    it.add_argument("dir", nargs="?", default=".", help="目标目录（默认当前）")
+    it.set_defaults(func=cmd_init)
+
     args = ap.parse_args()
-    args.func(args)
+    return args.func(args)
+
+
+def cmd_init(args) -> int:
+    from .init_cmd import main as init_main
+    import sys
+    sys.argv = ["netcfg-vault init", args.dir]
+    return init_main()
+
+
+def cmd_audit(args) -> int:
+    from .audit import audit_dir, write_csv
+    findings = audit_dir(args.dir)
+    if not findings:
+        print("所有配置检查通过, 未发现风险项")
+        return 0
+    print(f"发现 {len(findings)} 项风险:")
+    for f in findings:
+        print(f"  [{f.severity.upper():6s}] {f.device}: {f.desc}")
+    if args.csv_out:
+        write_csv(findings, args.csv_out)
+        print(f"已写入 {args.csv_out}")
+    return 1
+
+def cmd_report(args) -> int:
+    from .report import generate_report
+    out = generate_report(args.dir, args.out, prev_dir=args.prev_dir)
+    print(f"报告已生成: {out}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
