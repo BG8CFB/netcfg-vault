@@ -18,6 +18,7 @@ netcfg_vault.egg-info/requires.txt
 netcfg_vault.egg-info/top_level.txt
 tests/test_diff.py
 tests/test_license.py
+tests/test_license_v2.py
 tests/test_notify.py
 tests/test_scheduler.py
 tests/test_vault.py

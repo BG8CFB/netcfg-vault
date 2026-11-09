@@ -67,3 +67,9 @@ netcfg-vault vault extract vault.nvault --out restored
 - Pro key 解锁无限设备 + watch 全量轮询，`netcfg-vault license` 查看状态
 - license 通过 `NETCFG_LICENSE` 环境变量或 `~/.netcfg-vault/license` 文件配置
 - 验证完全离线（HMAC-SHA256 签名，无遥测无外呼）
+
+## Changelog
+
+- 0.5.0: Ed25519 非对称 license（NCVE- 前缀），公钥内嵌验证、私钥离线签发；兼容 v1 HMAC key；GitHub Discussions 开张。
+- 0.4.0: AES-256-GCM 加密 vault + 离线 Pro license。
+- 0.3.x: 定时备份 + webhook 告警 + 配置 diff。

@@ -5,3 +5,10 @@
 v0.5+ 计划升级 Ed25519 非对称签名（私钥永不随包分发）。
 """
 PRO_SECRET = b"netcfg-vault-pro-signing-key-v1-2026"
+
+
+# Ed25519 license 验证公钥（公开材料，随包分发；对应私钥仅作者持有）
+PUBLIC_KEY_PEM = b"""-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEAtWosditjkR01OVJ1svcO28roTc3zW1flvfTW4dRkE0s=
+-----END PUBLIC KEY-----
+"""
