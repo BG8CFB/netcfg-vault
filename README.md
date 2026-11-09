@@ -1,6 +1,8 @@
-# netcfg-vault
+﻿# netcfg-vault
 
 > Search keywords: h3c配置备份工具 · 华为交换机配置备份 · 思科 running-config 批量导出 · 网络设备配置自动备份 · network device config backup CLI · H3C Huawei Cisco Ruijie config management
+
+> [English README](./README_EN.md) · English docs
 
 > 产品主页: <https://bg8cfb.github.io/netcfg-vault/> · PyPI: <https://pypi.org/project/netcfg-vault/> · 中文教程: <https://bg8cfb.github.io/netcfg-vault/tutorial.html>
 
@@ -94,3 +96,19 @@ netcfg-vault report backups/2026-11-10/ --prev backups/2026-11-09/ --out report.
 ```
 
 一份可打印的 HTML 巡检报告: 设备数/高危项/中危项/变更设备数四张卡片 + 合规审计明细表 + 逐设备配置变更量表。给领导看的巡检, 一条命令。
+
+## v0.8.0 — init 脚手架
+
+一条命令生成 `devices.yml` + systemd timer + cron 样例：`netcfg-vault init`。
+
+## v0.9.0 — 基线快照（baseline）
+
+```bash
+netcfg-vault baseline set backups/2026-11-10 --name golden   # 锁定当前配置为基线
+netcfg-vault baseline diff backups/2026-11-14 --name golden  # 对比漂移（有变化 rc=1，可接告警）
+netcfg-vault baseline list
+netcfg-vault baseline remove golden
+```
+
+巡检场景：把上周备份设为基线，本周 diff 一眼看出谁改了配置（NEW/MISSING/CHANGED + 行级 diff）。
+
