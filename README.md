@@ -2,7 +2,7 @@
 
 > Search keywords: h3c配置备份工具 · 华为交换机配置备份 · 思科 running-config 批量导出 · 网络设备配置自动备份 · network device config backup CLI · H3C Huawei Cisco Ruijie config management
 
-> 产品主页: <https://bg8cfb.github.io/netcfg-vault/> · PyPI: <https://pypi.org/project/netcfg-vault/>
+> 产品主页: <https://bg8cfb.github.io/netcfg-vault/> · PyPI: <https://pypi.org/project/netcfg-vault/> · 中文教程: <https://bg8cfb.github.io/netcfg-vault/tutorial.html>
 
 **批量备份和对比网络设备配置的命令行工具** — 面向网络工程师 / 运维。
 
@@ -75,3 +75,22 @@ netcfg-vault vault extract vault.nvault --out restored
 - 0.5.0: Ed25519 非对称 license（NCVE- 前缀），公钥内嵌验证、私钥离线签发；兼容 v1 HMAC key；GitHub Discussions 开张。
 - 0.4.0: AES-256-GCM 加密 vault + 离线 Pro license。
 - 0.3.x: 定时备份 + webhook 告警 + 配置 diff。
+
+
+## v0.6.0 — 配置合规审计
+
+```bash
+netcfg-vault audit backups/2026-11-10/ --csv report.csv
+```
+
+离线扫描备份目录, 6 条规则 (telnet/SNMP默认团体名/Web管理/SSHv1/明文密码/VTY无ACL), 输出按严重度排序的 CSV 报告。不连设备, 不需要任何凭据。
+
+
+## v0.7.0 — HTML 巡检报告
+
+```bash
+netcfg-vault backup -f devices.yml -o backups/$(date +%F)/
+netcfg-vault report backups/2026-11-10/ --prev backups/2026-11-09/ --out report.html
+```
+
+一份可打印的 HTML 巡检报告: 设备数/高危项/中危项/变更设备数四张卡片 + 合规审计明细表 + 逐设备配置变更量表。给领导看的巡检, 一条命令。
