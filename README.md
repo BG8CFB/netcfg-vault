@@ -77,8 +77,10 @@ netcfg-vault vault extract vault.nvault --out restored
 - 0.3.x: 定时备份 + webhook 告警 + 配置 diff。
 
 
-## 速查资料
+## v0.6.0 — 配置合规审计
 
-- [H3C 交换机命令速查](https://gist.github.com/BG8CFB/90b4f692a5f751028e9ec85e53371242)
-- [华为交换机命令速查](https://gist.github.com/BG8CFB/3a229cdd6c3befa094f54ba45e6c5a3e)
-- [网络故障排查决策树](https://gist.github.com/BG8CFB/0c943554bb32071f7e7949ca4f6587a4)
+```bash
+netcfg-vault audit backups/2026-11-10/ --csv report.csv
+```
+
+离线扫描备份目录, 6 条规则 (telnet/SNMP默认团体名/Web管理/SSHv1/明文密码/VTY无ACL), 输出按严重度排序的 CSV 报告。不连设备, 不需要任何凭据。
