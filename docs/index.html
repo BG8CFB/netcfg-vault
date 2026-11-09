@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>netcfg-vault - 一条命令备份全网设备配置</title>
+<meta name="description" content="开源网络设备配置备份工具：H3C/华为/思科/锐捷批量备份、配置 diff、定时备份与告警。免费版 5 台。">
+<style>
+:root { --bg:#0d1117; --fg:#e6edf3; --acc:#3fb950; --card:#161b22; --border:#30363d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--fg); font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif; line-height:1.7; }
+.wrap { max-width:860px; margin:0 auto; padding:0 20px; }
+header { padding:72px 0 40px; text-align:center; }
+h1 { font-size:2.4rem; margin-bottom:12px; }
+h1 span { color:var(--acc); }
+.tagline { color:#8b949e; font-size:1.15rem; }
+.cta { display:inline-block; margin-top:24px; padding:12px 28px; background:var(--acc); color:#0d1117; font-weight:700; border-radius:8px; text-decoration:none; }
+pre { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px; overflow-x:auto; margin:16px 0; font-size:.92rem; }
+code { color:var(--acc); }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin:28px 0; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px; }
+.card h3 { color:var(--acc); margin-bottom:8px; font-size:1.05rem; }
+section { padding:32px 0; }
+h2 { margin-bottom:16px; font-size:1.5rem; }
+table { width:100%; border-collapse:collapse; margin:16px 0; }
+th,td { padding:10px 14px; border:1px solid var(--border); text-align:left; }
+th { background:var(--card); }
+footer { padding:40px 0; text-align:center; color:#8b949e; border-top:1px solid var(--border); margin-top:40px; }
+a { color:#58a6ff; }
+</style>
+</head>
+<body>
+<header class="wrap">
+  <h1>netcfg<span>-vault</span></h1>
+  <p class="tagline">一条命令，备份整个机房的设备配置</p>
+  <a class="cta" href="https://github.com/BG8CFB/netcfg-vault">GitHub 获取</a>
+</header>
+<section class="wrap">
+<h2>30 秒上手</h2>
+<pre><code>pip install git+https://github.com/BG8CFB/netcfg-vault.git
+export NETCFG_PASSWORD='你的密码'
+netcfg-vault backup devices.yml --out backups</code></pre>
+</section>
+<section class="wrap">
+<h2>核心能力</h2>
+<div class="grid">
+  <div class="card"><h3>批量备份</h3><p>H3C / 华为 / 思科 / 锐捷，SSH 批量拉取 running-config，按日期归档。</p></div>
+  <div class="card"><h3>智能 diff</h3><p>自动过滤时间戳等噪声行，只看真实配置变更，附 +N/-N 统计。</p></div>
+  <div class="card"><h3>定时备份</h3><p>watch 模式周期执行，失败设备即时上报。</p></div>
+  <div class="card"><h3>Webhook 告警</h3><p>钉钉 / 企业微信 / 飞书 / Server酱，一个环境变量配置。</p></div>
+</div>
+</section>
+<section class="wrap">
+<h2>免费版 vs Pro</h2>
+<table>
+<tr><th></th><th>免费版</th><th>Pro（¥99）</th></tr>
+<tr><td>设备数量</td><td>5 台</td><td>不限</td></tr>
+<tr><td>备份 / diff</td><td>✓</td><td>✓</td></tr>
+<tr><td>定时备份 watch</td><td>限 5 台</td><td>✓ 不限</td></tr>
+<tr><td>Webhook 告警</td><td>—</td><td>✓</td></tr>
+<tr><td>邮件支持</td><td>—</td><td>✓</td></tr>
+</table>
+</section>
+<section class="wrap">
+<h2>谁在用</h2>
+<p>中小机房运维、弱电/集成项目实施、网络外包维保团队、家庭实验室玩家。</p>
+</section>
+<footer class="wrap">
+  <p><a href="https://github.com/BG8CFB/netcfg-vault">GitHub</a> · <a href="https://gist.github.com/BG8CFB/6aab6eb7b32ef1e06ab9fe632da6346a">教程</a> · MIT License</p>
+</footer>
+</body>
+</html>
