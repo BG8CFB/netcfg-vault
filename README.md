@@ -94,3 +94,9 @@ netcfg-vault report backups/2026-11-10/ --prev backups/2026-11-09/ --out report.
 ```
 
 一份可打印的 HTML 巡检报告: 设备数/高危项/中危项/变更设备数四张卡片 + 合规审计明细表 + 逐设备配置变更量表。给领导看的巡检, 一条命令。
+
+
+## 速查资料
+
+- [华为交换机配置备份指南](https://bg8cfb.github.io/netcfg-vault/huawei-backup.html)
+- [H3C 交换机配置备份指南](https://bg8cfb.github.io/netcfg-vault/h3c-backup.html)
