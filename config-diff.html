@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>交换机配置对比工具 在线 diff — H3C/华为/思科配置变更一键对比</title>
+<meta name="description" content="在线对比两份交换机/路由器配置的差异：自动过滤时间戳等噪声行，输出行级新增/删除。支持 H3C、华为、思科、锐捷。免费无需安装。">
+<meta name="keywords" content="交换机配置对比,配置 diff 工具,h3c 配置对比,华为交换机配置变更,思科配置差异,network config diff,配置变更检测">
+<link rel="canonical" href="https://bg8cfb.github.io/netcfg-vault/config-diff.html">
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.65;padding:24px}
+.wrap{max-width:1080px;margin:0 auto}
+h1{font-size:1.7rem;color:#58a6ff;margin-bottom:8px}
+.sub{color:#8b949e;margin-bottom:20px;font-size:.95rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+label{display:block;font-size:.85rem;color:#8b949e;margin-bottom:6px}
+textarea{width:100%;height:280px;background:#161b22;border:1px solid #30363d;border-radius:8px;color:#c9d1d9;padding:12px;font-family:ui-monospace,Consolas,monospace;font-size:.82rem;resize:vertical}
+textarea:focus{outline:none;border-color:#58a6ff}
+.bar{display:flex;gap:10px;margin:16px 0;flex-wrap:wrap;align-items:center}
+button{background:#238636;color:#fff;border:none;border-radius:6px;padding:10px 22px;font-size:.95rem;cursor:pointer;font-weight:600}
+button:hover{background:#2ea043}
+button.ghost{background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:8px 14px;font-size:.85rem}
+label.chk{display:flex;align-items:center;gap:6px;color:#8b949e;font-size:.85rem;cursor:pointer;margin:0}
+.stats{margin:14px 0;font-size:.95rem}
+.stats b{color:#58a6ff}
+#out{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;overflow-x:auto;display:none}
+.line{font-family:ui-monospace,Consolas,monospace;font-size:.82rem;white-space:pre;padding:1px 10px;border-radius:3px}
+.add{background:rgba(46,160,67,.15);color:#3fb950}
+.del{background:rgba(248,81,73,.12);color:#f85149}
+.ctx{color:#6e7681}
+.foot{margin-top:28px;padding-top:16px;border-top:1px solid #21262d;color:#8b949e;font-size:.85rem}
+.foot a{color:#58a6ff;text-decoration:none}
+.foot a:hover{text-decoration:underline}
+.cta{background:linear-gradient(135deg,#1f6feb33,#23863633);border:1px solid #30363d;border-radius:10px;padding:16px 20px;margin-top:22px}
+.cta b{color:#58a6ff}
+</style>
+</head>
+<body><div class="wrap">
+<h1>交换机配置对比工具</h1>
+<p class="sub">粘贴两份配置 → 自动过滤时间戳/uptime 等噪声 → 行级差异高亮。数据不出浏览器，全部本地计算。H3C / 华为 / 思科 / 锐捷通用。</p>
+<div class="grid">
+<div><label for="a">旧配置（例如上周备份）</label><textarea id="a" placeholder="hostname core&#10;vlan 10&#10;interface Gi1/0/1&#10; description uplink&#10;..."></textarea></div>
+<div><label for="b">新配置（例如今天拉取）</label><textarea id="b" placeholder="hostname core&#10;vlan 10&#10;interface Gi1/0/1&#10; description uplink-new&#10;..."></textarea></div>
+</div>
+<div class="bar">
+<button id="go">对比差异</button>
+<button class="ghost" id="demo">填入示例</button>
+<button class="ghost" id="clear">清空</button>
+<label class="chk"><input type="checkbox" id="noise" checked> 过滤噪声行（时间戳/uptime/Building config）</label>
+</div>
+<div class="stats" id="stats"></div>
+<div id="out"></div>
+<div class="cta">
+<b>这份对比能力已内置在 netcfg-vault CLI 中</b> —— 批量备份 H3C/华为/思科配置后一条命令看全网变更，还能锁定基线、检测谁改了配置：<br>
+<code style="color:#3fb950">pip install netcfg-vault</code> · <a href="https://github.com/BG8CFB/netcfg-vault" style="color:#58a6ff">GitHub</a> · <a href="https://bg8cfb.github.io/netcfg-vault/tutorial.html" style="color:#58a6ff">中文教程</a>
+</div>
+<div class="foot">
+<p>相关工具：<a href="https://bg8cfb.github.io/netops-cheatsheets/command-map.html">三厂商命令对照表</a> · <a href="https://bg8cfb.github.io/netops-cheatsheets/vlan-trunk.html">VLAN/Trunk 配置</a> · <a href="https://bg8cfb.github.io/netops-cheatsheets/ssh-setup.html">SSH 开启配置</a> · <a href="https://bg8cfb.github.io/netcfg-vault/">netcfg-vault 主页</a></p>
+<p>© 2026 BG8CFB · 交流: 2945362558@qq.com</p>
+</div>
+</div>
+<script>
+var NOISE=[
+ /^!.*Time.*$/i,
+ /^#\s*Last\s+modified.*$/i,
+ /^#\s*\d{4}-\d{2}-\d{2}.*$/i,
+ /^\s*Building configuration.*$/i,
+ /^Current configuration.*$/i,
+ /^\s*\d+\s+(second|minute|hour|day)s?[,\s]/i
+];
+function normalize(text){
+ var kept=[],raw=text.split(/\r?\n/);
+ for(var i=0;i<raw.length;i++){
+  var l=raw[i].replace(/\s+$/,'');
+  if(document.getElementById('noise').checked){
+   var drop=false;
+   for(var j=0;j<NOISE.length;j++){if(NOISE[j].test(l)){drop=true;break}}
+   if(drop)continue;
+  }
+  kept.push(l);
+ }
+ return kept;
+}
+function lcsDiff(a,b){
+ var n=a.length,m=b.length;
+ if(n*m>4000000){ // 超大输入退化为逐行对照
+  var out=[];var max=Math.max(n,m);
+  for(var k=0;k<max;k++){
+   var x=a[k]===undefined?null:a[k],y=b[k]===undefined?null:b[k];
+   if(x===null){out.push(['+',y])}
+   else if(y===null){out.push(['-',x])}
+   else if(x!==y){out.push(['-',x]);out.push(['+',y])}
+   else{out.push([' ',x])}
+  }
+  return out;
+ }
+ var dp=[];for(var i=0;i<=n;i++){dp.push(new Uint32Array(m+1))}
+ for(var i=n-1;i>=0;i--){for(var j=m-1;j>=0;j--){
+  dp[i][j]=a[i]===b[j]?dp[i+1][j+1]+1:Math.max(dp[i+1][j],dp[i][j+1]);
+ }}
+ var out=[],i=0,j=0;
+ while(i<n&&j<m){
+  if(a[i]===b[j]){out.push([' ',a[i]]);i++;j++}
+  else if(dp[i+1][j]>=dp[i][j+1]){out.push(['-',a[i]]);i++}
+  else{out.push(['+',b[j]]);j++}
+ }
+ while(i<n){out.push(['-',a[i++]])}
+ while(j<m){out.push(['+',b[j++]])}
+ return out;
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+document.getElementById('go').onclick=function(){
+ var a=normalize(document.getElementById('a').value),b=normalize(document.getElementById('b').value);
+ var d=lcsDiff(a,b),add=0,del=0,html='';
+ for(var i=0;i<d.length;i++){
+  var t=d[i][0],s=d[i][1];
+  if(t==='+'){add++;html+='<div class="line add">+ '+esc(s)+'</div>'}
+  else if(t==='-'){del++;html+='<div class="line del">- '+esc(s)+'</div>'}
+  else{html+='<div class="line ctx">&nbsp;&nbsp;'+esc(s)+'</div>'}
+ }
+ document.getElementById('out').style.display='block';
+ document.getElementById('out').innerHTML=html;
+ document.getElementById('stats').innerHTML='<b>'+(add+del)+'</b> 行差异：<b style="color:#3fb950">+'+add+'</b> / <b style="color:#f85149">-'+del+'</b>'+(add+del===0?' ✅ 配置一致':'');
+};
+var DEMO_A='!Time source is NTP&#10;#&#10;hostname core-sw&#10;#&#10;vlan 10&#10;vlan 20&#10;#&#10;interface GigabitEthernet1/0/1&#10; description uplink-to-fw&#10; port link-type trunk&#10;#&#10;interface GigabitEthernet1/0/24&#10; description ap-floor2&#10; port link-type access&#10; port default vlan 20&#10;#&#10;snmp-agent community read public&#10;#&#10;return';
+var DEMO_B='!Time source is local clock&#10;#&#10;hostname core-sw&#10;#&#10;vlan 10&#10;vlan 20&#10;vlan 30&#10;#&#10;interface GigabitEthernet1/0/1&#10; description uplink-to-fw-2&#10; port link-type trunk&#10;#&#10;interface GigabitEthernet1/0/24&#10; description ap-floor2&#10; port link-type access&#10; port default vlan 20&#10;#&#10;snmp-agent community read public&#10;#&#10;ssh server enable&#10;#&#10;return';
+document.getElementById('demo').onclick=function(){
+ document.getElementById('a').value=DEMO_A.replace(/&#10;/g,'\n');
+ document.getElementById('b').value=DEMO_B.replace(/&#10;/g,'\n');
+ document.getElementById('go').click();
+};
+document.getElementById('clear').onclick=function(){
+ document.getElementById('a').value='';document.getElementById('b').value='';
+ document.getElementById('out').style.display='none';document.getElementById('out').innerHTML='';
+ document.getElementById('stats').innerHTML='';
+};
+</script>
+</body></html>
