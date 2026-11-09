@@ -17,7 +17,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install deps
-        run: pip install pyyaml paramiko
+        run: pip install pyyaml paramiko cryptography pytest
       - name: Run tests
-        run: |
-          for f in tests/test_*.py; do python "$f"; done
+        run: pytest tests/ -q
