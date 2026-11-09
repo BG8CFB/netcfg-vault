@@ -1,5 +1,6 @@
 """netcfg-vault CLI: backup network device configs concurrently."""
 import argparse
+import sys
 import getpass
 import os
 import sys
@@ -135,3 +136,18 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def cmd_audit(args) -> int:
+    from .audit import audit_dir, write_csv
+    findings = audit_dir(args.dir)
+    if not findings:
+        print("所有配置检查通过, 未发现风险项")
+        return 0
+    print(f"发现 {len(findings)} 项风险:")
+    for f in findings:
+        print(f"  [{f.severity.upper():6s}] {f.device}: {f.desc}")
+    if args.csv_out:
+        write_csv(findings, args.csv_out)
+        print(f"已写入 {args.csv_out}")
+    return 1
