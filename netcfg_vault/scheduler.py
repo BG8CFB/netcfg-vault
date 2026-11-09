@@ -11,6 +11,7 @@ from datetime import date
 from pathlib import Path
 
 from .backup import backup_device, load_devices
+from .notify import get_notify
 
 
 def default_notify(messages):
@@ -26,7 +27,7 @@ class Scheduler:
         self.inventory = Path(inventory)
         self.out_root = Path(out_root)
         self.interval = interval
-        self.notify = notify or default_notify
+        self.notify = notify or get_notify()
         self.device_limit = device_limit
         self._running = False
 
