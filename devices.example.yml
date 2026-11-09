@@ -1,0 +1,13 @@
+# netcfg-vault 设备清单示例
+devices:
+  - name: core-sw-01
+    host: 192.168.1.1
+    vendor: h3c          # h3c | huawei | cisco | ruijie
+    protocol: ssh        # ssh | telnet
+    username: admin
+    # password 用环境变量: NETCFG_PASSWORD 或 --ask-pass
+  - name: office-ar-02
+    host: 192.168.1.2
+    vendor: huawei
+    protocol: ssh
+    username: admin
