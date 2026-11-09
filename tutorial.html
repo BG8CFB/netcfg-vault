@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
@@ -61,6 +61,20 @@ netcfg-vault report backups/2026-11-10/ --out report.html</code></pre>
 <pre><code>export NETCFG_WEBHOOK='https://oapi.dingtalk.com/robot/send?access_token=xxx'
 netcfg-vault watch devices.yml --interval 86400</code></pre>
 <p>每天自动备份, 失败设备自动推送到钉钉/企业微信/飞书/Server酱。</p>
+<h2>9. 基线快照：一眼看出谁改了配置 (v0.9.0 新增)</h2>
+<p>巡检最痛的不是备份，而是<strong>不知道谁动了配置</strong>。把上周备份锁定为基线，本周一条命令看漂移：</p>
+<pre>netcfg-vault baseline set backups/2026-11-03 --name golden   <span class="c"># 锁定基线</span>
+netcfg-vault baseline diff backups/2026-11-10 --name golden  <span class="c"># 对比漂移</span>
+
+~ CHANGED  core.cfg
+    @@ -1 +1,2 @@
+     hostname core
+    +vlan 10
+1 file(s) differ from baseline [golden]   <span class="c"># 返回码 1, 可接告警</span></pre>
+<p>输出标记 <code>NEW / MISSING / CHANGED</code>，行级 diff 自动过滤时钟、uptime 等噪声行。把 diff 挂进定时任务，配合第 8 节的 webhook，配置被改动当天群里就能收到通知。</p>
+<pre>netcfg-vault baseline list    <span class="c"># 查看所有基线</span>
+netcfg-vault baseline remove golden</pre>
+
 
 <h2 class=warn>为什么需要自动备份?</h2>
 <p>设备更换、误删配置、审计要求、故障回滚 — 配置备份是网络运维的第一道保险。手工 <code>display current-configuration</code> 复制粘贴无法规模化, 也无法追溯变更。</p>
