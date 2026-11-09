@@ -5,6 +5,7 @@ netcfg_vault/__init__.py
 netcfg_vault/_pro_secret.py
 netcfg_vault/audit.py
 netcfg_vault/backup.py
+netcfg_vault/baseline.py
 netcfg_vault/cli.py
 netcfg_vault/diff.py
 netcfg_vault/init_cmd.py
@@ -20,6 +21,7 @@ netcfg_vault.egg-info/entry_points.txt
 netcfg_vault.egg-info/requires.txt
 netcfg_vault.egg-info/top_level.txt
 tests/test_audit.py
+tests/test_baseline.py
 tests/test_diff.py
 tests/test_license.py
 tests/test_license_v2.py
