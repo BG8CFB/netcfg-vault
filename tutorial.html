@@ -19,11 +19,14 @@ a{color:#58a6ff}.warn{background:#1f2937;border-left:3px solid #f0883e;padding:1
 <h1>H3C / 华为 / 思科交换机配置自动备份教程</h1>
 <p>netcfg-vault 是一个开源 CLI, 专为网络工程师设计: 批量备份多厂商设备配置、diff 变更、AES-256-GCM 加密存储、定时任务、Webhook 告警。本文从零开始, 5 分钟跑通。</p>
 
-<h2>1. 安装</h2>
+<h2>1. 一键初始化 (v0.8.0 新增)</h2>
+<pre><code>netcfg-vault init</code></pre>
+<p>自动生成 <code>devices.yml</code> 清单模板、<code>systemd</code> 定时服务、<code>cron</code> 示例, 30 秒搭好整套自动备份。</p>
+<h2>2. 安装</h2>
 <pre><code>pip install netcfg-vault</code></pre>
 <p>支持 Python 3.8+, 依赖 paramiko + cryptography, Windows/Linux/macOS 通用。</p>
 
-<h2>2. 写设备清单</h2>
+<h2>3. 写设备清单</h2>
 <pre><code>devices:
   - name: core-sw1
     host: 192.168.1.1
@@ -36,21 +39,25 @@ a{color:#58a6ff}.warn{background:#1f2937;border-left:3px solid #f0883e;padding:1
     protocol: ssh
     username: admin</code></pre>
 
-<h2>3. 一次备份全部设备</h2>
+<h2>4. 一次备份全部设备</h2>
 <pre><code>export NETCFG_PASSWORD='你的设备密码'
 netcfg-vault backup devices.yml --out backups/</code></pre>
 <p>输出按日期归档: <code>backups/2026-11-10/core-sw1.cfg</code>。免费版支持 5 台设备, Pro 授权无限台。</p>
 
-<h2>4. 看今天改了什么 (diff)</h2>
+<h2>5. 看今天改了什么 (diff)</h2>
 <pre><code>netcfg-vault diff backups/2026-11-09/ backups/2026-11-10/</code></pre>
 <p>自动过滤时间戳/uptime 噪声, 只留真实配置变更。</p>
 
-<h2>5. 加密保险库 (防泄漏)</h2>
+<h2>6. 加密保险库 (防泄漏)</h2>
 <pre><code>netcfg-vault vault save backups/ --out configs.nvault --ask-pass
 netcfg-vault vault list configs.nvault --ask-pass</code></pre>
 <p>AES-256-GCM + PBKDF2 600k 迭代, 配置文件落盘即密文, 丢 U 盘/传网盘都安全。</p>
 
-<h2>6. 定时备份 + 钉钉/企微告警</h2>
+<h2>7. 安全巡检与报告 (v0.6+)</h2>
+<pre><code>netcfg-vault audit backups/2026-11-10/ --out audit.csv
+netcfg-vault report backups/2026-11-10/ --out report.html</code></pre>
+<p><code>audit</code> 扫描 telnet 开启/SNMP 默认社区/弱口令等 6 类隐患输出 CSV; <code>report</code> 一条命令生成带日间对比的 HTML 巡检报告。</p>
+<h2>8. 定时备份 + 钉钉/企微告警</h2>
 <pre><code>export NETCFG_WEBHOOK='https://oapi.dingtalk.com/robot/send?access_token=xxx'
 netcfg-vault watch devices.yml --interval 86400</code></pre>
 <p>每天自动备份, 失败设备自动推送到钉钉/企业微信/飞书/Server酱。</p>
