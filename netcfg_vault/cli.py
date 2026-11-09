@@ -145,6 +145,11 @@ def main() -> int:
     it.add_argument("dir", nargs="?", default=".", help="目标目录（默认当前）")
     it.set_defaults(func=cmd_init)
 
+    bl = sub.add_parser("baseline", help="基线快照: 锁定备份目录并对比漂移")
+    bl.add_argument("args", nargs="*", help="set <dir> --name <n> | list | diff <dir> --name <n> | remove <n>")
+    bl.add_argument("--name", default=None, help="基线名（set/diff 用）")
+    bl.set_defaults(func=cmd_baseline)
+
     args = ap.parse_args()
     return args.func(args)
 
@@ -154,6 +159,16 @@ def cmd_init(args) -> int:
     import sys
     sys.argv = ["netcfg-vault init", args.dir]
     return init_main()
+
+
+def cmd_baseline(args) -> int:
+    from . import baseline
+    import sys
+    argv = list(args.args)
+    if args.name is not None:
+        argv += ["--name", args.name]
+    sys.argv = ["netcfg-vault", "baseline"] + argv
+    return baseline.main()
 
 
 def cmd_audit(args) -> int:
